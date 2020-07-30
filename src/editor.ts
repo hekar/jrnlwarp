@@ -1,0 +1,23 @@
+import {spawn} from 'child_process'
+
+export default class Editor {
+  private _command: string
+
+  get command(): string {
+    return this._command
+  }
+
+  constructor(command = '') {
+    if (command === '') {
+      this._command = process.env.EDITOR || 'vi'
+    } else {
+      this._command = command
+    }
+  }
+
+  open(filepath: string) {
+    spawn(this.command, [filepath], {
+      stdio: 'inherit',
+    })
+  }
+}
