@@ -15,7 +15,7 @@ export default class Editor {
     }
   }
 
-  open(filepath: string) {
+  async open(filepath: string) {
     spawn(this.command, [filepath], {
       stdio: 'inherit',
     })

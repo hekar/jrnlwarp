@@ -1,4 +1,9 @@
 import {Command, flags} from '@oclif/command'
+import * as path from 'path'
+import * as moment from 'moment'
+import Editor from './editor'
+import Journal from './journal'
+import AppConfig from './appconfig'
 
 class Jrnlwarp extends Command {
   static description = 'manage your developer journals with vim and git'
@@ -6,8 +11,7 @@ class Jrnlwarp extends Command {
   static flags = {
     version: flags.version({char: 'v'}),
     help: flags.help({char: 'h'}),
-    date: flags.string({char: 'd', description: 'date of journal to open'}),
-    force: flags.boolean({char: 'f'}),
+    from: flags.string({description: 'date of the journal to open'}),
   }
 
   static args = [{name: 'file'}]
@@ -15,11 +19,14 @@ class Jrnlwarp extends Command {
   async run() {
     const {args, flags} = this.parse(Jrnlwarp)
 
-    const date = flags.date ?? new Date().toISOString()
-    this.log(`hello ${date} from ./src/index.ts`)
-    if (args.file && flags.force) {
-      this.log(`you input --force and --file: ${args.file}`)
+    let from = new Date()
+    if (flags.from) {
+      from = moment(flags.from).toDate()
     }
+
+    const editor = new Editor()
+    const journal = new Journal(AppConfig.default(), from)
+    await journal.open(editor)
   }
 }
 

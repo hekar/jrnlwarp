@@ -12,7 +12,7 @@ describe('jrnlwarp', () => {
 
   test
   .stdout()
-  .do(() => cmd.run(['--name', 'jeff']))
+  .do(() => cmd.run(['--from', 'jeff']))
   .it('runs hello --name jeff', ctx => {
     expect(ctx.stdout).to.contain('hello jeff')
   })
