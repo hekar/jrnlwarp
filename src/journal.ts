@@ -11,6 +11,7 @@ export default class Journal {
   private template: string
   private date: Date
   private name: string
+  private extension: string = '.md'
 
   constructor(config: AppConfig, date: Date) {
     this.folder = config.journalFolder
@@ -52,6 +53,6 @@ export default class Journal {
   }
 
   fullpath() {
-    return path.join(this.folder, this.name)
+    return path.join(this.folder, this.name + this.extension)
   }
 }

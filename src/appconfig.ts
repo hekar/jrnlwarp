@@ -4,6 +4,8 @@ import * as fs from 'fs-extra'
 export default class AppConfig {
   journalFolder!: string
   journalTemplate!: string
+  gitRemote!: string
+  gitBranch!: string
 
   static default(): AppConfig {
     const folder = path.join(
@@ -13,9 +15,13 @@ export default class AppConfig {
       '',
       '```',
     ].join('\n')
+    const remote = 'origin'
+    const branch = 'master'
     const appConfig = new AppConfig(
       folder,
       template,
+      remote,
+      branch,
     )
     return appConfig
   }
@@ -32,11 +38,19 @@ export default class AppConfig {
     return new AppConfig(
       content.folder,
       content.template,
+      content.remote,
+      content.branch,
     )
   }
 
-  constructor(journalFolder: string, journalTemplate: string) {
-    this.journalFolder = journalFolder
-    this.journalTemplate = journalTemplate
+  constructor(
+    folder: string,
+    template: string,
+    remote: string,
+    branch: string) {
+    this.journalFolder = folder
+    this.journalTemplate = template
+    this.gitRemote = remote
+    this.gitBranch = branch
   }
 }
