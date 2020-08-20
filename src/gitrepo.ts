@@ -1,32 +1,37 @@
-import simpleGit, {SimpleGit} from 'simple-git';
-import AppConfig from './appconfig';
+import simpleGit, {SimpleGit} from 'simple-git'
+import AppConfig from './appconfig'
 
 export default class GitRepo {
   config: AppConfig
+
   path: string
+
   git: SimpleGit
 
   constructor(appconfig: AppConfig, path: string) {
     this.config = appconfig
     this.path = path
-    this.git = simpleGit();
+    this.git = simpleGit(this.path)
   }
-  
+
   async initIfNotExists() {
-    await this.git.init()
-    await this.git.addRemote('origin', this.config.gitRemote);
+    if (!await this.git.checkIsRepo()) {
+      await this.git.init()
+    }
   }
 
   async status() {
-    return await this.git.status({ baseRepo: this.path, })
+    return this.git.status()
   }
 
   async commitAndPush() {
-    await this.git.add('*.md')
-    await this.git.commit(`journal update ${new Date().toISOString()}`)
-    return await this.git.push(
-      'origin',
-      'master',
-      { baseRepo: this.path, })
+    const statusList = await this.git.status()
+    if (!statusList.isClean()) {
+      await this.git.add('*.md')
+      await this.git.commit(`journal update ${new Date().toISOString()}`)
+    }
+    await this.git.removeRemote('origin')
+    await this.git.addRemote('origin', this.config.gitRemote)
+    return this.git.push('origin', 'master')
   }
 }

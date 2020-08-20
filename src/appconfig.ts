@@ -3,19 +3,25 @@ import * as fs from 'fs-extra'
 
 export default class AppConfig {
   journalFolder!: string
+
   journalTemplate!: string
+
   gitRemote!: string
+
   gitBranch!: string
 
   static default(): AppConfig {
     const folder = path.join(
-      process.env.HOME ?? '~', '.jrnlwrap')
+      process.env.HOME ?? '~', '.jrnlwarp')
     const template = [
       '```',
-      '',
+      'Title: #{title}#',
+      'Date: #{date}#',
+      'Tags:',
+      'Memo:',
       '```',
     ].join('\n')
-    const remote = 'origin'
+    const remote = 'git@github.com:hekar/jrnl.git'
     const branch = 'master'
     const appConfig = new AppConfig(
       folder,
@@ -33,7 +39,7 @@ export default class AppConfig {
     }
 
     const content = await fs.readJson(fullpath,
-      { encoding: 'utf8' })
+      {encoding: 'utf8'})
 
     return new AppConfig(
       content.folder,

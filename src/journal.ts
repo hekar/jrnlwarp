@@ -4,22 +4,30 @@ import * as fs from 'fs-extra'
 import {constants} from 'os'
 import AppConfig from './appconfig'
 import Editor from './editor'
-import { rejects } from 'assert'
 
 export default class Journal {
   private folder: string
-  private template: string
-  private date: Date
-  private name: string
-  private extension: string = '.md'
 
-  constructor(config: AppConfig, date: Date) {
+  private template: string
+
+  private date: Date
+
+  private name: string
+
+  private title: string
+
+  private extension = '.md'
+
+  constructor(config: AppConfig, date: Date, title = '') {
     this.folder = config.journalFolder
     this.template = config.journalTemplate
+      .replace('#{title}#', title)
+      .replace('#{date}#', moment(date).format('YYYY-MM-DD'))
     this.date = date
     const namePrefix = 'jrnl'
     const dateSuffix = moment(date).format('YYYY-MM-DD')
     this.name = `${namePrefix}-${dateSuffix}`
+    this.title = title
   }
 
   async open(editor: Editor) {
@@ -34,14 +42,14 @@ export default class Journal {
     try {
       const stat = await fs.stat(fullpath)
       exists = stat.isFile()
-    } catch (err) {
-      switch (err.code) {
-        case constants.errno.EACCES:
-          console.error(err)
-          throw err;
-        default:
-          exists = false
-          break;
+    } catch (error) {
+      switch (error.code) {
+      case constants.errno.EACCES:
+        console.error(error)
+        throw error
+      default:
+        exists = false
+        break
       }
     }
 
