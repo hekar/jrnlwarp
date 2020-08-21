@@ -22,6 +22,7 @@ class Jrnlwarp extends Command {
     'push-only': flags.boolean({description: 'do not open the editor, but push journal contents to remote', default: false}),
     config: flags.string({description: 'path to the appconfig', default: defaultConfigPath()}),
     'print-config': flags.boolean({description: 'print config and exit'}),
+    pwd: flags.boolean({description: 'print the directory containing jrnl entries and exit'}),
   }
 
   static args = [{name: 'title'}]
@@ -42,6 +43,11 @@ class Jrnlwarp extends Command {
     const configPath = flags.config
 
     const config = await AppConfig.loadOrDefault(configPath)
+    if (flags.pwd) {
+      console.log(config.journalFolder)
+      return
+    }
+
     if (flags['print-config']) {
       console.log(JSON.stringify(config, null, 2))
       return
