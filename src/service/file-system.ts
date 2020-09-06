@@ -20,7 +20,7 @@ export default class NativeFileSystem implements FileSystem {
   }
 
   mkdirp(path: string): Promise<void> {
-    return fs.mkdir(path)
+    return fs.mkdirp(path)
   }
 
   stat(path: string): Promise<fs.Stats> {

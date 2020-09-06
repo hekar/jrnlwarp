@@ -1,4 +1,4 @@
-import {spawn} from 'child_process'
+import {spawnSync} from 'child_process'
 
 interface Editor {
   open(filepath: string): void;
@@ -20,8 +20,9 @@ export default class ExternalEditor implements Editor {
   }
 
   async open(filepath: string) {
-    spawn(this.command, [filepath], {
+    spawnSync(this.command, [filepath], {
       stdio: 'inherit',
+      shell: false,
     })
   }
 }

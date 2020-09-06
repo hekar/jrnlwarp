@@ -41,7 +41,8 @@ export default class Journal {
 
   async createIfNotExists() {
     await this.fileSystem.mkdirp(this.config.journalFolder)
-    const fullpath = this.fullpath()
+
+      const fullpath = this.fullpath()
     let exists = false
     try {
       const stat = await this.fileSystem.stat(fullpath)
