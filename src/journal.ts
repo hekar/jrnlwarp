@@ -4,35 +4,31 @@ import AppConfig, { IAppConfig, AppConfigSettings } from './appconfig'
 import Editor from './editor'
 import { IDateFormatter } from './services/DateFormatter'
 import { IFileSystem } from './services/FileSystem'
+import JournalReference from './JournalReference'
 
 export default class Journal {
   private readonly fileSystem: IFileSystem
   private readonly settings: AppConfigSettings
 
-  readonly date: Date
   readonly extension = '.md'
   readonly name: string
   readonly template: string
-  readonly title: string
 
   constructor(
     dateFormatter: IDateFormatter,
     fileSystem: IFileSystem,
     config: IAppConfig,
-    date: Date,
-    title = ''
+    ref: JournalReference
   ) {
-    const formattedDate = dateFormatter.format(date)
+    const formattedDate = dateFormatter.format(ref.date)
     this.fileSystem = fileSystem
     this.settings = config.settings
     this.template = this.settings.journalTemplate
-      .replace('#{title}#', title)
+      .replace('#{title}#', ref.title)
       .replace('#{date}#', formattedDate)
-    this.date = date
     const namePrefix = 'jrnl'
     const dateSuffix = formattedDate
     this.name = `${namePrefix}-${dateSuffix}`
-    this.title = title
   }
 
   async open(editor: Editor) {
