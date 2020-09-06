@@ -1,12 +1,12 @@
 import {Command, flags} from '@oclif/command'
 import * as path from 'path'
 import * as moment from 'moment'
-import Editor from './editor'
-import Journal from './journal'
-import AppConfig from './appconfig'
-import GitRepo from './gitrepo'
-import DateFormatter from './services/DateFormatter'
-import FileSystem from './services/FileSystem'
+import Editor from './service/Editor'
+import Journal from './Journal'
+import AppConfigLoader from './service/AppConfigLoader'
+import GitRepo from './service/GitRepo'
+import DateFormatter from './service/DateFormatter'
+import FileSystem from './service/FileSystem'
 
 function defaultConfigPath(): string {
   const home = process.env.HOME ?? process.env.USERPROFILE ?? '~'
@@ -44,9 +44,10 @@ class Jrnlwarp extends Command {
 
     const configPath = flags.config
 
-    const config = await AppConfig.loadOrDefault(configPath)
+    const fileSystem = new FileSystem()
+    const config = await new AppConfigLoader(fileSystem).loadOrDefault(configPath)
     if (flags.pwd) {
-      console.log(config.settings.journalFolder)
+      console.log(config.journalFolder)
       return this.exit(0)
     }
 
@@ -61,15 +62,15 @@ class Jrnlwarp extends Command {
         new DateFormatter(),
         new FileSystem(),
         config,
-        from,
-        title)
+        { date: from, title },
+      )
       await journal.open(editor)
     }
 
     if (flags.push || flags['push-only']) {
       const gitRepo = new GitRepo(
         config,
-        config.settings.journalFolder)
+        config.journalFolder)
       await gitRepo.initIfNotExists()
       await gitRepo.commitAndPush()
     }

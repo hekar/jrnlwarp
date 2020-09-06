@@ -1,14 +1,15 @@
 import * as path from 'path'
 import {constants} from 'os'
-import AppConfig, { IAppConfig, AppConfigSettings } from './appconfig'
-import Editor from './editor'
-import { IDateFormatter } from './services/DateFormatter'
-import { IFileSystem } from './services/FileSystem'
+import AppConfigLoader, { IAppConfigLoader } from './service/AppConfigLoader'
+import { AppConfig } from "./AppConfig"
+import Editor from './service/Editor'
+import { IDateFormatter } from './service/DateFormatter'
+import { IFileSystem } from './service/FileSystem'
 import JournalReference from './JournalReference'
 
 export default class Journal {
   private readonly fileSystem: IFileSystem
-  private readonly settings: AppConfigSettings
+  private readonly config: AppConfig
 
   readonly extension = '.md'
   readonly name: string
@@ -17,13 +18,13 @@ export default class Journal {
   constructor(
     dateFormatter: IDateFormatter,
     fileSystem: IFileSystem,
-    config: IAppConfig,
+    config: AppConfig,
     ref: JournalReference
   ) {
     const formattedDate = dateFormatter.format(ref.date)
     this.fileSystem = fileSystem
-    this.settings = config.settings
-    this.template = this.settings.journalTemplate
+    this.config = config
+    this.template = config.journalTemplate
       .replace('#{title}#', ref.title)
       .replace('#{date}#', formattedDate)
     const namePrefix = 'jrnl'
@@ -37,7 +38,7 @@ export default class Journal {
   }
 
   async createIfNotExists() {
-    await this.fileSystem.mkdirp(this.settings.journalFolder)
+    await this.fileSystem.mkdirp(this.config.journalFolder)
     const fullpath = this.fullpath()
     let exists = false
     try {
@@ -63,7 +64,7 @@ export default class Journal {
 
   fullpath() {
     return path.join(
-      this.settings.journalFolder,
+      this.config.journalFolder,
       this.name + this.extension)
   }
 }

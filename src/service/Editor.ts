@@ -1,6 +1,7 @@
 import {spawn} from 'child_process'
 
 interface IEditor {
+  open(filepath: string): void
 }
 
 export default class Editor implements IEditor {

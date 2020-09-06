@@ -13,14 +13,18 @@ manage developer journals with vim and git
 * [Usage](#usage)
 * [Commands](#commands)
 <!-- tocstop -->
+
 # Usage
+
+Requires NodeJS 14.x and above.
+
 <!-- usage -->
 ```sh-session
 $ npm install -g jrnlwarp
 $ jrnlwarp COMMAND
 running command...
 $ jrnlwarp (-v|--version|version)
-jrnlwarp/1.0.0 linux-x64 node-v12.18.3
+jrnlwarp/1.0.0 linux-x64 node-v14.9.0
 $ jrnlwarp --help [COMMAND]
 USAGE
   $ jrnlwarp COMMAND

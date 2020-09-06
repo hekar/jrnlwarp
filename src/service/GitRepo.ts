@@ -1,15 +1,19 @@
 import simpleGit, {SimpleGit} from 'simple-git'
-import AppConfig from './appconfig'
+import { AppConfig } from '../AppConfig'
+
+export interface IGitRepo {
+  initIfNotExists(): Promise<void>
+  status(): Promise<void>
+  commitAndPush(): Promise<void>
+}
 
 export default class GitRepo {
-  config: AppConfig
+  private readonly appConfig: AppConfig
+  private readonly path: string
+  private readonly git: SimpleGit
 
-  path: string
-
-  git: SimpleGit
-
-  constructor(appconfig: AppConfig, path: string) {
-    this.config = appconfig
+  constructor(appConfig: AppConfig, path: string) {
+    this.appConfig = appConfig
     this.path = path
     this.git = simpleGit(this.path)
   }
@@ -31,7 +35,7 @@ export default class GitRepo {
       await this.git.commit(`journal update ${new Date().toISOString()}`)
     }
     await this.git.removeRemote('origin')
-    await this.git.addRemote('origin', this.config.settings.gitRemote)
+    await this.git.addRemote('origin', this.appConfig.gitRemote)
     return this.git.push('origin', 'master')
   }
 }

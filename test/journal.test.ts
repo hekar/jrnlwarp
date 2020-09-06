@@ -1,13 +1,15 @@
 import {expect, test} from '@oclif/test'
 import * as moment from 'moment'
 import * as tempy from 'tempy'
-import AppConfig, { AppConfigSettings } from '../src/appconfig'
-import Editor from '../src/editor'
-import DateFormatter from '../src/services/DateFormatter'
-import FileSystem from '../src/services/FileSystem'
-import Journal from '../src/journal'
+import AppConfig, { AppConfigSettings } from '../src/AppConfig'
+import Editor from '../src/Editor'
+import DateFormatter from '../src/service/DateFormatter'
+import FileSystem from '../src/service/FileSystem'
+import Journal from '../src/Journal'
+import JournalReference from '../src/JournalReference'
 
-const defaultDate = moment('1970-01-01').toDate()
+const defaultDateStr = '1970-01-01'
+const defaultDate = moment(defaultDateStr).toDate()
 
 function create(title: string, settings: AppConfigSettings) : Journal {
   const appconfig = new AppConfig(settings)
@@ -15,21 +17,22 @@ function create(title: string, settings: AppConfigSettings) : Journal {
     new DateFormatter(),
     new FileSystem(),
     appconfig,
-    defaultDate,
-    title,
+    { date: defaultDate, title },
   )
 }
 
 describe('journal', () => {
   describe('#constructor', () => {
     test.it('replaces title in config.journalTemplate', ctx => {
-      const journal = create('mytitle', {
+      const title = 'mytitle';
+      const journal = create(title, {
         journalFolder: '',
         journalTemplate: 'title: #{title}#',
         gitRemote: '',
         gitBranch: ''
       })
-      expect(journal.title).to.equal('mytitle')
+      expect(journal.name).to.equal(`${title}-${defaultDateStr}`)
+      expect(journal.template).to.equal(`title: ${title}`)
     })
 
     test.it('replaces date in config.journalTemplate', ctx => {
