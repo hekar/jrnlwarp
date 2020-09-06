@@ -1,6 +1,9 @@
 import {spawn} from 'child_process'
 
-export default class Editor {
+interface IEditor {
+}
+
+export default class Editor implements IEditor {
   private _command: string
 
   get command(): string {

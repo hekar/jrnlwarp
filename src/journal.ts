@@ -1,31 +1,36 @@
 import * as path from 'path'
-import * as moment from 'moment'
-import * as fs from 'fs-extra'
 import {constants} from 'os'
-import AppConfig from './appconfig'
+import AppConfig, { IAppConfig, AppConfigSettings } from './appconfig'
 import Editor from './editor'
+import { IDateFormatter } from './services/DateFormatter'
+import { IFileSystem } from './services/FileSystem'
 
 export default class Journal {
-  private folder: string
+  private readonly fileSystem: IFileSystem
+  private readonly settings: AppConfigSettings
 
-  private template: string
+  readonly date: Date
+  readonly extension = '.md'
+  readonly name: string
+  readonly template: string
+  readonly title: string
 
-  private date: Date
-
-  private name: string
-
-  private title: string
-
-  private extension = '.md'
-
-  constructor(config: AppConfig, date: Date, title = '') {
-    this.folder = config.journalFolder
-    this.template = config.journalTemplate
+  constructor(
+    dateFormatter: IDateFormatter,
+    fileSystem: IFileSystem,
+    config: IAppConfig,
+    date: Date,
+    title = ''
+  ) {
+    const formattedDate = dateFormatter.format(date)
+    this.fileSystem = fileSystem
+    this.settings = config.settings
+    this.template = this.settings.journalTemplate
       .replace('#{title}#', title)
-      .replace('#{date}#', moment(date).format('YYYY-MM-DD'))
+      .replace('#{date}#', formattedDate)
     this.date = date
     const namePrefix = 'jrnl'
-    const dateSuffix = moment(date).format('YYYY-MM-DD')
+    const dateSuffix = formattedDate
     this.name = `${namePrefix}-${dateSuffix}`
     this.title = title
   }
@@ -36,11 +41,11 @@ export default class Journal {
   }
 
   async createIfNotExists() {
-    await fs.mkdirp(this.folder)
+    await this.fileSystem.mkdirp(this.settings.journalFolder)
     const fullpath = this.fullpath()
     let exists = false
     try {
-      const stat = await fs.stat(fullpath)
+      const stat = await this.fileSystem.stat(fullpath)
       exists = stat.isFile()
     } catch (error) {
       switch (error.code) {
@@ -54,13 +59,15 @@ export default class Journal {
     }
 
     if (!exists) {
-      const fd = await fs.open(fullpath, 'w')
-      await fs.write(fd, this.template, 0, 'utf-8')
-      await fs.close(fd)
+      const fd = await this.fileSystem.open(fullpath, 'w')
+      await this.fileSystem.write(fd, this.template, 0, 'utf-8')
+      await this.fileSystem.close(fd)
     }
   }
 
   fullpath() {
-    return path.join(this.folder, this.name + this.extension)
+    return path.join(
+      this.settings.journalFolder,
+      this.name + this.extension)
   }
 }

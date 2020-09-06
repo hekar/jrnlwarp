@@ -5,6 +5,8 @@ import Editor from './editor'
 import Journal from './journal'
 import AppConfig from './appconfig'
 import GitRepo from './gitrepo'
+import DateFormatter from './services/DateFormatter'
+import FileSystem from './services/FileSystem'
 
 function defaultConfigPath(): string {
   const home = process.env.HOME ?? process.env.USERPROFILE ?? '~'
@@ -44,28 +46,35 @@ class Jrnlwarp extends Command {
 
     const config = await AppConfig.loadOrDefault(configPath)
     if (flags.pwd) {
-      console.log(config.journalFolder)
-      return
+      console.log(config.settings.journalFolder)
+      return this.exit(0)
     }
 
     if (flags['print-config']) {
       console.log(JSON.stringify(config, null, 2))
-      return
+      return this.exit(0)
     }
 
     if (!flags['push-only']) {
       const editor = new Editor()
-      const journal = new Journal(config, from, title)
+      const journal = new Journal(
+        new DateFormatter(),
+        new FileSystem(),
+        config,
+        from,
+        title)
       await journal.open(editor)
     }
 
     if (flags.push || flags['push-only']) {
       const gitRepo = new GitRepo(
         config,
-        config.journalFolder)
+        config.settings.journalFolder)
       await gitRepo.initIfNotExists()
       await gitRepo.commitAndPush()
     }
+
+    return this.exit(0)
   }
 }
 

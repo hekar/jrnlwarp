@@ -31,7 +31,7 @@ export default class GitRepo {
       await this.git.commit(`journal update ${new Date().toISOString()}`)
     }
     await this.git.removeRemote('origin')
-    await this.git.addRemote('origin', this.config.gitRemote)
+    await this.git.addRemote('origin', this.config.settings.gitRemote)
     return this.git.push('origin', 'master')
   }
 }
