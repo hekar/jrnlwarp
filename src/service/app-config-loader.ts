@@ -1,22 +1,22 @@
 import * as path from 'path'
-import { AppConfig } from '../AppConfig'
-import { IFileSystem } from './FileSystem'
+import {AppConfig} from '../app-config'
+import {FileSystem} from './file-system'
 
-export interface IAppConfigLoader {
-  loadOrDefault(fullpath: string): Promise<AppConfig>
+export interface AppConfigLoader {
+  loadOrDefault(fullpath: string): Promise<AppConfig>;
 }
 
-export default class AppConfigLoader implements IAppConfigLoader {
-  fileSystem: IFileSystem
+export default class LocalAppConfigLoader implements AppConfigLoader {
+  fileSystem: FileSystem
 
-  constructor(fileSystem: IFileSystem) {
+  constructor(fileSystem: FileSystem) {
     this.fileSystem = fileSystem
   }
 
   async loadOrDefault(fullpath: string): Promise<AppConfig> {
     const exists = await this.fileSystem.pathExists(fullpath)
     if (!exists) {
-      return AppConfigLoader.default()
+      return LocalAppConfigLoader.default()
     }
 
     const content = await this.fileSystem.readJson(fullpath)

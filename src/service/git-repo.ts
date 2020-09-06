@@ -1,15 +1,17 @@
 import simpleGit, {SimpleGit} from 'simple-git'
-import { AppConfig } from '../AppConfig'
+import {AppConfig} from '../app-config'
 
-export interface IGitRepo {
-  initIfNotExists(): Promise<void>
-  status(): Promise<void>
-  commitAndPush(): Promise<void>
+export interface GitRepo {
+  initIfNotExists(): Promise<void>;
+  status(): Promise<void>;
+  commitAndPush(): Promise<void>;
 }
 
-export default class GitRepo {
+export default class SimpleGitRepo {
   private readonly appConfig: AppConfig
+
   private readonly path: string
+
   private readonly git: SimpleGit
 
   constructor(appConfig: AppConfig, path: string) {

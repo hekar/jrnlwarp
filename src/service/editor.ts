@@ -1,10 +1,10 @@
 import {spawn} from 'child_process'
 
-interface IEditor {
-  open(filepath: string): void
+interface Editor {
+  open(filepath: string): void;
 }
 
-export default class Editor implements IEditor {
+export default class ExternalEditor implements Editor {
   private _command: string
 
   get command(): string {

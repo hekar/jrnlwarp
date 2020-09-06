@@ -1,46 +1,42 @@
 import {expect, test} from '@oclif/test'
 import * as moment from 'moment'
-import * as tempy from 'tempy'
-import AppConfig, { AppConfigSettings } from '../src/AppConfig'
-import Editor from '../src/Editor'
-import DateFormatter from '../src/service/DateFormatter'
-import FileSystem from '../src/service/FileSystem'
-import Journal from '../src/Journal'
-import JournalReference from '../src/JournalReference'
+import {AppConfig} from '../src/app-config'
+import SimpleDateFormatter from '../src/service/date-formatter'
+import NativeFileSystem from '../src/service/file-system'
+import Journal from '../src/journal'
 
 const defaultDateStr = '1970-01-01'
 const defaultDate = moment(defaultDateStr).toDate()
 
-function create(title: string, settings: AppConfigSettings) : Journal {
-  const appconfig = new AppConfig(settings)
+function create(title: string, appConfig: AppConfig): Journal {
   return new Journal(
-    new DateFormatter(),
-    new FileSystem(),
-    appconfig,
-    { date: defaultDate, title },
+    new SimpleDateFormatter(),
+    new NativeFileSystem(),
+    appConfig,
+    {date: defaultDate, title},
   )
 }
 
 describe('journal', () => {
   describe('#constructor', () => {
-    test.it('replaces title in config.journalTemplate', ctx => {
-      const title = 'mytitle';
+    test.it('replaces title in config.journalTemplate', () => {
+      const title = 'mytitle'
       const journal = create(title, {
         journalFolder: '',
         journalTemplate: 'title: #{title}#',
         gitRemote: '',
-        gitBranch: ''
+        gitBranch: '',
       })
-      expect(journal.name).to.equal(`${title}-${defaultDateStr}`)
+      expect(journal.name).to.equal(`jrnl-${defaultDateStr}`)
       expect(journal.template).to.equal(`title: ${title}`)
     })
 
-    test.it('replaces date in config.journalTemplate', ctx => {
+    test.it('replaces date in config.journalTemplate', () => {
       const journal = create('title', {
         journalFolder: '',
         journalTemplate: 'date: #{date}#',
         gitRemote: '',
-        gitBranch: ''
+        gitBranch: '',
       })
       expect(journal.template).to.equal('date: 1970-01-01')
     })

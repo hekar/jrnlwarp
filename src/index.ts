@@ -1,12 +1,12 @@
 import {Command, flags} from '@oclif/command'
 import * as path from 'path'
 import * as moment from 'moment'
-import Editor from './service/Editor'
-import Journal from './Journal'
-import AppConfigLoader from './service/AppConfigLoader'
-import GitRepo from './service/GitRepo'
-import DateFormatter from './service/DateFormatter'
-import FileSystem from './service/FileSystem'
+import ExternalEditor from './service/editor'
+import Journal from './journal'
+import LocalAppConfigLoader from './service/app-config-loader'
+import SimpleGitRepo from './service/git-repo'
+import SimpleDateFormatter from './service/date-formatter'
+import NativeFileSystem from './service/file-system'
 
 function defaultConfigPath(): string {
   const home = process.env.HOME ?? process.env.USERPROFILE ?? '~'
@@ -44,31 +44,31 @@ class Jrnlwarp extends Command {
 
     const configPath = flags.config
 
-    const fileSystem = new FileSystem()
-    const config = await new AppConfigLoader(fileSystem).loadOrDefault(configPath)
+    const fileSystem = new NativeFileSystem()
+    const config = await new LocalAppConfigLoader(fileSystem).loadOrDefault(configPath)
     if (flags.pwd) {
-      console.log(config.journalFolder)
+      console.log(config.journalFolder) // eslint-disable-line no-console
       return this.exit(0)
     }
 
     if (flags['print-config']) {
-      console.log(JSON.stringify(config, null, 2))
+      console.log(JSON.stringify(config, null, 2)) // eslint-disable-line no-console
       return this.exit(0)
     }
 
     if (!flags['push-only']) {
-      const editor = new Editor()
+      const editor = new ExternalEditor()
       const journal = new Journal(
-        new DateFormatter(),
-        new FileSystem(),
+        new SimpleDateFormatter(),
+        new NativeFileSystem(),
         config,
-        { date: from, title },
+        {date: from, title},
       )
       await journal.open(editor)
     }
 
     if (flags.push || flags['push-only']) {
-      const gitRepo = new GitRepo(
+      const gitRepo = new SimpleGitRepo(
         config,
         config.journalFolder)
       await gitRepo.initIfNotExists()

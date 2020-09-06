@@ -1,23 +1,25 @@
 import * as path from 'path'
 import {constants} from 'os'
-import AppConfigLoader, { IAppConfigLoader } from './service/AppConfigLoader'
-import { AppConfig } from "./AppConfig"
-import Editor from './service/Editor'
-import { IDateFormatter } from './service/DateFormatter'
-import { IFileSystem } from './service/FileSystem'
-import JournalReference from './JournalReference'
+import {AppConfig} from './app-config'
+import ExternalEditor from './service/editor'
+import {DateFormatter} from './service/date-formatter'
+import {FileSystem} from './service/file-system'
+import JournalReference from './journal-reference'
 
 export default class Journal {
-  private readonly fileSystem: IFileSystem
+  private readonly fileSystem: FileSystem
+
   private readonly config: AppConfig
 
   readonly extension = '.md'
+
   readonly name: string
+
   readonly template: string
 
   constructor(
-    dateFormatter: IDateFormatter,
-    fileSystem: IFileSystem,
+    dateFormatter: DateFormatter,
+    fileSystem: FileSystem,
     config: AppConfig,
     ref: JournalReference
   ) {
@@ -25,14 +27,14 @@ export default class Journal {
     this.fileSystem = fileSystem
     this.config = config
     this.template = config.journalTemplate
-      .replace('#{title}#', ref.title)
-      .replace('#{date}#', formattedDate)
+    .replace('#{title}#', ref.title)
+    .replace('#{date}#', formattedDate)
     const namePrefix = 'jrnl'
     const dateSuffix = formattedDate
     this.name = `${namePrefix}-${dateSuffix}`
   }
 
-  async open(editor: Editor) {
+  async open(editor: ExternalEditor) {
     await this.createIfNotExists()
     await editor.open(this.fullpath())
   }
@@ -47,7 +49,6 @@ export default class Journal {
     } catch (error) {
       switch (error.code) {
       case constants.errno.EACCES:
-        console.error(error)
         throw error
       default:
         exists = false

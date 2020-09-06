@@ -1,16 +1,16 @@
 import * as fs from 'fs-extra'
 
-export interface IFileSystem {
-  pathExists(fullpath: string): Promise<boolean>
-  readJson(fullpath: string): Promise<any>
-  mkdirp(path: string): Promise<void>
-  stat(path: string): Promise<fs.Stats>
-  open(path: string, options: string): Promise<number>
-  write(fd: number, content: string, seek: number, encoding: string): Promise<void>
-  close(fd: number): Promise<void>
+export interface FileSystem {
+  pathExists(fullpath: string): Promise<boolean>;
+  readJson(fullpath: string): Promise<any>;
+  mkdirp(path: string): Promise<void>;
+  stat(path: string): Promise<fs.Stats>;
+  open(path: string, options: string): Promise<number>;
+  write(fd: number, content: string, seek: number, encoding: string): Promise<void>;
+  close(fd: number): Promise<void>;
 }
 
-export default class FileSystem implements IFileSystem {
+export default class NativeFileSystem implements FileSystem {
   pathExists(fullpath: string): Promise<boolean> {
     return fs.pathExists(fullpath)
   }
