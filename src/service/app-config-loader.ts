@@ -31,7 +31,7 @@ export default class LocalAppConfigLoader implements AppConfigLoader {
 
   static default(): AppConfig {
     const folder = path.join(
-      process.env.HOME ?? '~', '.jrnlwarp')
+      process.env.HOME ?? process.env.USERPROFILE ?? '~', '.jrnlwarp')
     const template = [
       '```',
       'Title: #{title}#',
