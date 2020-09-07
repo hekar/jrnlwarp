@@ -1,7 +1,7 @@
 {
   "name": "jrnlwarp",
   "description": "manage developer journals with vim and git",
-  "version": "1.1.6",
+  "version": "1.1.7",
   "author": "Hekar Khani (@hekar)",
   "bin": {
     "jrnlwarp": "./bin/run"
@@ -23,9 +23,9 @@
     "@types/mocha": "^5",
     "@types/node": "^14",
     "chai": "^4.2.0",
-    "eslint-config-oclif-typescript": "^0.1",
-    "eslint-config-oclif": "^3.1",
     "eslint": "^5.13",
+    "eslint-config-oclif": "^3.1",
+    "eslint-config-oclif-typescript": "^0.1",
     "mocha": "^5",
     "nyc": "^14",
     "tempy": "^0.6.0",

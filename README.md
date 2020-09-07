@@ -16,7 +16,7 @@ $ npm install -g jrnlwarp
 $ jrnlwarp COMMAND
 running command...
 $ jrnlwarp (-v|--version|version)
-jrnlwarp/1.1.6 linux-x64 node-v14.9.0
+jrnlwarp/1.1.7 linux-x64 node-v14.9.0
 $ jrnlwarp --help [COMMAND]
 USAGE
   $ jrnlwarp COMMAND
